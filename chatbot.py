@@ -30,7 +30,9 @@ config = {"configurable": {"thread_id": "abc123"}}
 
 while True:
     query = input("User: ")
-
+    if query.lower() == "exit":
+        print("Exiting!!")
+        break
     input_message = HumanMessage(query) 
     output = app.invoke({"messages": [input_message]},config=config)
     output["messages"][-1].pretty_print()
