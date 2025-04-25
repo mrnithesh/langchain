@@ -1,18 +1,20 @@
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.prompts import PromptTemplate
-from langchain_core.messages import HumanMessage
+from langchain.chat_models import init_chat_model
+from langchain.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
 import os
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
-llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0, max_tokens=1000, api_key=GEMINI_API_KEY)
-prompt = PromptTemplate.from_template("Write the story based on the user input!  User: {user}")
+
+llm = init_chat_model(model="gemini-2.0-flash",model_provider="google_genai")
+prompt = ChatPromptTemplate.from_template("Write the story based on the user input!  User: {user}")
+chain = prompt | llm | StrOutputParser()
 
 
 def chat(user_input):
-    final_prompt = prompt.format(user = user_input)
-    ai_response = llm.invoke([HumanMessage(content = final_prompt)])
-    return ai_response.content
+    ai_response = chain.invoke({"user": user_input})
+    return ai_response
 
 print("Enter exit to end the chat")
 
